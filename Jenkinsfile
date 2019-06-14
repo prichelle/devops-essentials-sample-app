@@ -7,6 +7,7 @@ pipeline {
                 sh 'ls -la'
                 sh './gradlew build'
                 archiveArtifacts artifacts: 'src/index.html'
+                echo env.BRANCH_NAME
             }
         }
         stage('DeployToStage') {
