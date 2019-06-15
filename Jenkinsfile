@@ -15,11 +15,10 @@ pipeline {
             }
         }
         stage('DeployToStage') {
-            when {
-                branch 'master'
-            }
             steps {
                 echo 'stage step to be done'
+                echo 'build docker'
+                docker docker build --no-cache -t helloapp:v1 .
             }
         }
         stage('DeployToProd') {
