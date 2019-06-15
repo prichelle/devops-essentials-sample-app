@@ -9,7 +9,7 @@ pipeline {
             steps {
                 echo 'Running build automation'
                 sh 'ls -la'
-                sh './gradlew build'
+                //sh './gradlew build'
                 archiveArtifacts artifacts: 'src/index.html'
                 echo "My branch is: ${env.BRANCH_NAME}"
             }
@@ -18,7 +18,7 @@ pipeline {
             steps {
                 echo 'stage step to be done'
                 echo 'build docker'
-                docker docker build --no-cache -t helloapp:v1 .
+                sh 'docker docker build --no-cache -t helloapp:v1 .'
             }
         }
         stage('DeployToProd') {
