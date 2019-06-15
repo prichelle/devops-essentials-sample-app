@@ -1,5 +1,9 @@
 pipeline {
     agent any
+     parameters {
+        string(defaultValue: "TEST", description: 'What environment?', name: 'userFlag')
+        choice(choices: ['master', 'acc'], description: 'What branch ?', name: 'branch')
+    }
     stages {
         stage('Build') {
             steps {
