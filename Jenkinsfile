@@ -20,14 +20,14 @@ pipeline {
                 echo 'build docker'
                 script {
                     docimg = docker.build("helloapp:v2")
-                    docker.withRegistry('http://localhost', 'docker-registry') {
-                        docimg.push("v2.1")
+                    docker.withRegistry('http://localhost:80/app', 'docker-registry') {
+                        docimg.push("v2")
                     }
                  }
-                sh 'docker build -t helloapp:v1 .'
-                echo 'push to registry'
-                sh 'docker tag helloapp:v1 localhost:80/app/helloapp:v1'
-                sh 'docker push localhost:80/app/helloapp:v1'
+                //sh 'docker build -t helloapp:v1 .'
+                //echo 'push to registry'
+                //sh 'docker tag helloapp:v1 localhost:80/app/helloapp:v1'
+                //sh 'docker push localhost:80/app/helloapp:v1'
                 echo 'images available in the catalog'
                 sh 'curl -X GET http://localhost:80/v2/_catalog -u x:y'
                 echo 'deploying using helm'
