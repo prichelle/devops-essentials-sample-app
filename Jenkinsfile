@@ -21,7 +21,8 @@ pipeline {
                 script {
                     docimg = docker.build("helloapp:v2")
                     docker.withRegistry('http://localhost', 'docker_registry') {
-                        app.push("v2")
+                        docimg.push("v2.1")
+                    }
                  }
                 sh 'docker build -t helloapp:v1 .'
                 echo 'push to registry'
