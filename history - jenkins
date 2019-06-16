@@ -1,0 +1,17 @@
+sudo usermod -aG docker jenkins
+
+
+sudo docker tag helloapp:v1 localhost:80/app/helloapp:v1
+sudo docker login localhost:80 -u admin -u admin
+sudo docker push localhost:80/app/helloapp:v1
+
+curl -X GET http://localhost:80/v2/_catalog -u admin:admin
+
+plugin docker
+
+
+def jobName = "sampleApp"
+def job = Jenkins.instance.getItem(jobName)
+job.getBuilds().each { it.delete() }
+job.nextBuildNumber = 1
+job.save()

@@ -20,7 +20,7 @@ pipeline {
                 echo 'build docker'
                 script {
                     docimg = docker.build("helloapp:v2")
-                    docker.withRegistry('http://localhost', 'docker_registry') {
+                    docker.withRegistry('http://localhost', 'docker-registry') {
                         docimg.push("v2.1")
                     }
                  }
