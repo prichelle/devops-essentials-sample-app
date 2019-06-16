@@ -19,6 +19,15 @@ pipeline {
                 echo 'stage step to be done'
                 echo 'build docker'
                 sh 'docker build -t helloapp:v1 .'
+                echo 'push to registry'
+                sh 'docker tag helloapp:v1 localhost:80/app/helloapp:v1'
+                sh 'sudo docker login localhost:80 -u admin -u admin'
+                sh 'sudo docker push localhost:80/app/helloapp:v1'
+                echo 'images available in the catalog'
+                sh 'curl -X GET http://localhost:80/v2/_catalog -u admin:admin'
+                echo 'deploying using helm'
+                sh 'helm install --name=helloapp --namespace=labs ./helm'
+                sh 'helm list'
             }
         }
         stage('DeployToProd') {
