@@ -19,9 +19,10 @@ pipeline {
                 echo 'stage step to be done'
                 echo 'build docker'
                 script {
-                    docimg = docker.build("helloapp:v1")
-
-                }
+                    docimg = docker.build("helloapp:v2")
+                    docker.withRegistry('http://localhost', 'docker_registry') {
+                        app.push("v2")
+                 }
                 sh 'docker build -t helloapp:v1 .'
                 echo 'push to registry'
                 sh 'docker tag helloapp:v1 localhost:80/app/helloapp:v1'
