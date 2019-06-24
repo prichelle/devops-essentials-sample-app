@@ -6,7 +6,7 @@ pipeline {
     }
     stages {
         stage('Build') {
-            steps {
+            node('master') {
                 echo 'Running build automation'
                 sh 'ls -la'
                 //sh './gradlew build'
