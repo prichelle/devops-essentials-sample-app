@@ -18,9 +18,9 @@ pipeline {
         		//).trim()
                 sh 'git log --abbrev-commit --pretty=oneline -1'
                 echo "commit id: ${COMMITID}"
-                currentBuild.result = "FAILURE"
+                //currentBuild.result = "FAILURE"
             }
-        }
+        }/*
         stage('DeployToStage') {
             steps {
                 echo 'stage step to be done'
@@ -51,6 +51,6 @@ pipeline {
                 milestone(1)
                 echo 'prod step to be done'
             }
-        }
+        }*/
     }
 }
