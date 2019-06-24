@@ -12,6 +12,12 @@ pipeline {
                 //sh './gradlew build'
                 archiveArtifacts artifacts: 'src/index.html'
                 echo "My branch is: ${env.BRANCH_NAME}"
+                COMMITID = sh (
+          			script: 'git log --abbrev-commit --pretty=oneline -1',
+          			returnStdout: true
+        		).trim()
+                echo "commit id: ${COMMITID}"
+                currentBuild.result = "FAILURE"
             }
         }
         stage('DeployToStage') {
