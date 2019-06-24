@@ -29,10 +29,10 @@ pipeline {
                 //sh 'docker tag helloapp:v1 localhost:80/app/helloapp:v1'
                 //sh 'docker push localhost:80/app/helloapp:v1'
                 echo 'images available in the catalog'
-                sh 'curl -X GET http://localhost:80/v2/_catalog -u x:y'
-                echo 'deploying using helm'
-                sh 'helm install --name=helloapp --namespace=labs ./helm'
-                sh 'helm list'
+                //sh 'curl -X GET http://localhost:80/v2/_catalog -u x:y'
+                //echo 'deploying using helm'
+                //sh 'helm install --name=helloapp --namespace=labs ./helm'
+                //sh 'helm list'
             }
         }
         stage('DeployToProd') {
