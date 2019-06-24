@@ -6,16 +6,17 @@ pipeline {
     }
     stages {
         stage('Build') {
-            node('master') {
+            steps {
                 echo 'Running build automation'
                 sh 'ls -la'
                 //sh './gradlew build'
                 archiveArtifacts artifacts: 'src/index.html'
                 echo "My branch is: ${env.BRANCH_NAME}"
-                COMMITID = sh (
-          			script: 'git log --abbrev-commit --pretty=oneline -1',
-          			returnStdout: true
-        		).trim()
+                //COMMITID = sh (
+          			//script: 'git log --abbrev-commit --pretty=oneline -1',
+          			//returnStdout: true
+        		//).trim()
+                sh 'git log --abbrev-commit --pretty=oneline -1'
                 echo "commit id: ${COMMITID}"
                 currentBuild.result = "FAILURE"
             }
