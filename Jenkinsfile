@@ -6,7 +6,7 @@ registryHost = "localhost:80";
 
 registryURL = "http://" + registryHost
 
-appColor = "green"
+appColor = "blue"
 namespace = "labs"
 
 
@@ -34,7 +34,7 @@ node {
         		).trim()
 
         echo "commit id: ${commitId} " 
-        commitId = "562271c"
+        //commitId = "562271c"
 
         //publish(creds, commitId, appName, namespace, "http"+ registryURL)  
         //deployincluster(registryHost, namespace, appName, commitId, appColor)
@@ -102,7 +102,7 @@ def updateIngress(String namespace, String appColor, String appName){
               parameters: [choice(name: 'Update Ingress', choices: 'no\nyes', description: 'Choose "yes" if you want to deploy this build')]
         }
         if (updateIngress == "yes") { 
-            
+
        svcId = sh (
           			script: "kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | grep ${appName} | awk '{print \$1}'",
           			returnStdout: true
