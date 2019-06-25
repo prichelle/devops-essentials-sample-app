@@ -10,6 +10,6 @@ spec:
   - http:
       paths:
       - backend:
-          serviceName: helloappv2-sampleapp
+          serviceName: SVC_NAME
           servicePort: 8080
         path: /
