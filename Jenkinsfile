@@ -1,9 +1,13 @@
 //Name of credential object in Jenkins
 creds = "apic-apidev"
 commitId = "001"
-appName = "mySampleApp"
+appName = "mySampleApp".lower()
 namespace = "labs"
-
+    parameters {
+        string(defaultValue: "mysampleapp", description: 'name of the app', name: 'appNameParam')
+        //choice(choices: ['master', 'acc'], description: 'What branch ?', name: 'branch')
+    }
+ 
 node {    
 
     try{
@@ -44,7 +48,7 @@ def deploy(String creds, String commitId, String myAppName, String namespace) {
         stage ('Build') {
                 echo 'Running build automation'
                 imageName = namespace + "/" + myAppName + ":" + commitId
-                echo "building imageName"
+                echo "building ${imageName}"
                 docimg = docker.build(imageName)
         } 
         stage ('reg-load') {
