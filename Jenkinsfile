@@ -98,8 +98,8 @@ def updateIngress(String namespace, String appColor, String appName){
     stage ('updateIngress'){
        svcId = sh (
           			//script: "kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | awk '{print $1}'",
-          			//script: "kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | awk '{print $1}'",
-                      script: 'kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | awk \'{print $1}\'',
+          			script: "kubectl get svc -n ${namespace} --show-labels | grep ${appColor}",
+                      //script: 'kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | awk \'{print $1}\'',
           			returnStdout: true
         		).trim()
 
