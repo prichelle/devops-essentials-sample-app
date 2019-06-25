@@ -1,6 +1,8 @@
 //Name of credential object in Jenkins
 creds = "apic-apidev"
 commitId = "001"
+appName = "mySampleApp"
+namespace = "labs"
 
 node {    
 
@@ -20,38 +22,49 @@ node {
         		).trim()
         echo "commit id: ${commitId} " 
         //Publish to integration server
-        var1 = "hello"
-        deploy(creds, var1)  
+        deploy(creds, commitId, myApp, namespace)  
 
     } catch(exe)
     {
         echo "${exe}"
-        error("[FAILURE] Failed to publish ${product}")
+        error("[FAILURE] Failed to initialize")
     }
 }    
 
-def deploy(String creds, String var1) {
+def deploy(String creds, String commitId, String myAppName, String namespace) {
+        
         //Login to Dev Server
         try {
             echo "Accept license"
         } catch(exe){
-            echo "Failed to Login to ${server} with Status Code: ${exe}"
+            echo "Failed to accept license with Status Code: ${exe}"
             throw exe                       
         }  
         
         stage ('Build') {
                 echo 'Running build automation'
-                echo "My branch is: ${env.BRANCH_NAME}"
-                //COMMITID = sh (
-          			//script: 'git log --abbrev-commit --pretty=oneline -1',
-          			//returnStdout: true
-        		//).trim()
-                sh 'git log --abbrev-commit --pretty=oneline -1'
-                //echo "commit id: ${COMMITID}"
-                //currentBuild.result = "FAILURE"
+                imageName = ${namespace} + "/" + ${myAppName} + ":" + $(commitId)
+                echo "building imageName"
+                docimg = docker.build(imageName)
         } 
-        stage ('registry load') {
+        stage ('reg-load') {
             echo 'Loading built image into registry'
+                
+                /*script {
+                    docker.withRegistry('http://localhost:80/app/', 'docker-registry') {
+                        docimg.push("v2")
+                    }
+                 }*/
+                //sh 'docker build -t helloapp:v1 .'
+                //echo 'push to registry'
+                //sh 'docker tag helloapp:v1 localhost:80/app/helloapp:v1'
+                //sh 'docker push localhost:80/app/helloapp:v1'
+                echo 'images available in the catalog'
+                //sh 'curl -X GET http://localhost:80/v2/_catalog -u x:y'
+                //echo 'deploying using helm'
+                //sh 'helm install --name=helloapp --namespace=labs ./helm'
+                //sh 'helm list'
+
         }
 }
 
