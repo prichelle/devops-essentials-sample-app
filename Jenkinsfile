@@ -3,12 +3,14 @@ creds = "apic-apidev"
 commitId = "001"
 appName = "mySampleApp".toLowerCase()
 registryURL = "http://localhost:80";
+appColor = "green"
 
 namespace = "labs"
-    parameters {
-        string(defaultValue: "mysampleapp", description: 'name of the app', name: 'appNameParam')
-        //choice(choices: ['master', 'acc'], description: 'What branch ?', name: 'branch')
-    }
+
+parameters {
+    string(defaultValue: "mysampleapp", description: 'name of the app', name: 'appNameParam')
+    //choice(choices: ['master', 'acc'], description: 'What branch ?', name: 'branch')
+}
  
 node {    
 
@@ -22,13 +24,17 @@ node {
         sh 'ls -la'
         sh 'git log --abbrev-commit --pretty=oneline -1'
 
+/*
         commitId = sh (
           			script: 'git log --abbrev-commit --pretty=oneline -1 | awk  \'{print $1}\'',
           			returnStdout: true
         		).trim()
+*/
+        commitId = "562271c"
         echo "commit id: ${commitId} " 
-        //Publish to integration server
+
         //publish(creds, commitId, appName, namespace, registryURL)  
+        deployincluster(namespace, appName, commitId, appColor, appPort)
 
     } catch(exe)
     {
@@ -61,13 +67,17 @@ def publish(String creds, String commitId, String myAppName, String namespace, S
 
 }
 
-def deployincluster(String namespace, String appName, String commitId){
+def deployincluster(String namespace, String appName, String commitId, String appColor){
     
     echo 'deploying using helm'
+    sh "sed -i back 's|IM_URI|${namespace}/${appName}|g' ./helm/values.yaml"
+    sh "sed -i back 's|IM_TAG|${commitId}|g' ./helm/values.yaml"
+    sh "sed -i back 's|APP_COLOR|${appColor}|g' ./helm/values.yaml"
+    // sh "sed -i back 's|APP_PORT|${appPort}|g' ./helm/values.yaml"
     sh 'helm install --name=${appName}-${commitId} --namespace=${namespace} ./helm'
-    sed -i back 's|IM_URI|labs/mysampleapp|g' values.yaml
-    sed -i back 's|IM_TAG|562271c|g' values.yaml
-    sed -i back 's|APP_COLOR|green|g' values.yaml
-    sed -i back 's|APP_PORT|8080|g' values.yaml
     sh 'helm list'
+    
+    
+    // kubectl get svc -n labs --show-labels | grep green | awk '{print $1}'
+    // helm install --namespace=labs . --name myapp-562271c
 }
