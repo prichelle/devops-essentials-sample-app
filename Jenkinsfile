@@ -65,7 +65,7 @@ def publish(String creds, String commitId, String myAppName, String namespace, S
             }
             echo 'images available in the catalog'
             withCredentials([usernameColonPassword(credentialsId: 'docker-registry', variable: 'USERPASS')]) {
-                sh 'curl -X GET $registryURL/v2/_catalog -u $USERPASS'
+                sh "curl -X GET ${registryURL}/v2/_catalog -u $USERPASS"
             }
         }
 
