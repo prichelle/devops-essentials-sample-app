@@ -43,19 +43,6 @@ def deploy(String creds, String var1) {
                 //echo "commit id: ${COMMITID}"
                 //currentBuild.result = "FAILURE"
         } 
-        //Logout for dev server
-        stage ('Logout') {
-            logoutFailed = false
-            try {
-                //apic.logout(server)
-                apic_logout(server)
-                echo "Logged out of ${server}"
-            } catch (exe) {
-                echo "Failed to Log out with Status Code: ${exe}, check Environment manually."
-                logoutFailed = true
-                throw exe
-            } 
-        }   
 }
 
 
