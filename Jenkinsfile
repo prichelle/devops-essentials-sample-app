@@ -35,7 +35,7 @@ node {
         echo "commit id: ${commitId} " 
 
         //publish(creds, commitId, appName, namespace, registryURL)  
-        deployincluster(namespace, appName, commitId, appColor)
+        deployincluster(registryURL, namespace, appName, commitId, appColor)
 
     } catch(exe)
     {
@@ -68,15 +68,16 @@ def publish(String creds, String commitId, String myAppName, String namespace, S
 
 }
 
-def deployincluster(String namespace, String appName, String commitId, String appColor){
+def deployincluster(String registryURL, String namespace, String appName, String commitId, String appColor){
     
     echo 'deploying using helm'
-    sh "sed -i back 's|IM_URI|${namespace}/${appName}|g' ./helm/values.yaml"
-    sh "sed -i back 's|IM_TAG|${commitId}|g' ./helm/values.yaml"
-    sh "sed -i back 's|APP_COLOR|${appColor}|g' ./helm/values.yaml"
+    sh "sed -i 's|IM_URI|${registryURL}/${namespace}/${appName}|g' ./helm/values.yaml" xs
+    sh "sed -i 's|IM_TAG|${commitId}|g' ./helm/values.yaml"
+    sh "sed -i 's|APP_COLOR|${appColor}|g' ./helm/values.yaml"
     // sh "sed -i back 's|APP_PORT|${appPort}|g' ./helm/values.yaml"
-    sh 'helm install --name=${appName}-${commitId} --namespace=${namespace} ./helm'
-    sh 'helm list'
+    sh "cat ./helm/values.yaml"
+    //sh 'helm install --name=${appName}-${commitId} --namespace=${namespace} ./helm'
+    //sh 'helm list'
     
     
     // kubectl get svc -n labs --show-labels | grep green | awk '{print $1}'

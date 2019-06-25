@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: IM_URI
+  repository: ${namespace}/${appName}
     # localhost:80/app/helloapp
   tag: IM_TAG
   pullPolicy: IfNotPresent
