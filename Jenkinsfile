@@ -37,7 +37,8 @@ node {
         commitId = "562271c"
 
         //publish(creds, commitId, appName, namespace, "http"+ registryURL)  
-        deployincluster(registryHost, namespace, appName, commitId, appColor)
+        //deployincluster(registryHost, namespace, appName, commitId, appColor)
+        updateIngress( namespace,  appColor, appName)
 
     } catch(exe)
     {
@@ -72,22 +73,34 @@ def publish(String creds, String commitId, String myAppName, String namespace, S
 
 def deployincluster(String registryHost, String namespace, String appName, String commitId, String appColor){
     
-    echo 'deploying using helm'
-    echo "setting image name to ${registryHost}/${namespace}/${appName}" 
-    sh "sed -i 's|IM_URI|${registryHost}/${namespace}/${appName}|g' ./helm/values.yaml" 
+    stage ('deploy-img'){
+        echo 'deploying using helm'
+        echo "setting image name to ${registryHost}/${namespace}/${appName}" 
+        sh "sed -i 's|IM_URI|${registryHost}/${namespace}/${appName}|g' ./helm/values.yaml" 
 
-    echo "setting image tag to ${commitId}"
-    sh "sed -i 's|IM_TAG|${commitId}|g' ./helm/values.yaml"
+        echo "setting image tag to ${commitId}"
+        sh "sed -i 's|IM_TAG|${commitId}|g' ./helm/values.yaml"
 
-    echo "setting app color to ${appColor}" 
-    sh "sed -i 's|APP_COLOR|${appColor}|g' ./helm/values.yaml"
-    // sh "sed -i back 's|APP_PORT|${appPort}|g' ./helm/values.yaml"
-    sh "cat ./helm/values.yaml"
-    
-    sh "helm install --name=${appName}-${commitId} --namespace=${namespace} ./helm"
-    sh 'helm list'
-    
-    
-    // kubectl get svc -n labs --show-labels | grep green | awk '{print $1}'
-    // helm install --namespace=labs . --name myapp-562271c
+        echo "setting app color to ${appColor}" 
+        sh "sed -i 's|APP_COLOR|${appColor}|g' ./helm/values.yaml"
+        // sh "sed -i back 's|APP_PORT|${appPort}|g' ./helm/values.yaml"
+        sh "cat ./helm/values.yaml"
+        
+        sh "helm install --name=${appName}-${commitId} --namespace=${namespace} ./helm"
+        sh 'helm list'
+         // kubectl get svc -n labs --show-labels | grep green | awk '{print $1}'
+        // helm install --namespace=labs . --name myapp-562271c
+    }
+}
+
+def updateIngress(String namespace, String appColor, String appName){
+
+    stage ('updateIngress'){
+       svcId = sh (
+          			script: 'kubectl get svc -n $namespace --show-labels | grep $appColor | grep $appName | awk \'{print $1}\'',
+          			returnStdout: true
+        		).trim()
+
+        echo "svc: ${svcId}"
+    }
 }
