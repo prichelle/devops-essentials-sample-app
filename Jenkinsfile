@@ -96,6 +96,12 @@ def deployincluster(String registryHost, String namespace, String appName, Strin
 def updateIngress(String namespace, String appColor, String appName){
 
     stage ('updateIngress'){
+
+        script {
+            updateIngress = input message: 'Update Ingress',
+              parameters: [choice(name: 'Update Ingress', choices: 'no\nyes', description: 'Choose "yes" if you want to deploy this build')]
+        }
+        when { environment name: 'updateIngress', value: 'yes' 
        svcId = sh (
           			script: "kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | grep ${appName} | awk '{print \$1}'",
           			returnStdout: true
@@ -106,6 +112,6 @@ def updateIngress(String namespace, String appColor, String appName){
         sh "sed -i 's|SVC_NAME|${svcId}|g' ingress.yaml"
 
         sh "kubectl apply -f ingress.yaml -n ${namespace}"
-
+}
     }
 }
