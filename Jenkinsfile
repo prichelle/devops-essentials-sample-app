@@ -2,9 +2,11 @@
 creds = "apic-apidev"
 commitId = "001"
 appName = "mysampleapp".toLowerCase()
-registryURL = "http://localhost:80";
-appColor = "green"
+registryHost = "localhost:80";
 
+registryURL = "http://" + registryHost
+
+appColor = "green"
 namespace = "labs"
 
 
@@ -34,8 +36,8 @@ node {
         echo "commit id: ${commitId} " 
         commitId = "562271c"
 
-        //publish(creds, commitId, appName, namespace, registryURL)  
-        deployincluster(registryURL, namespace, appName, commitId, appColor)
+        //publish(creds, commitId, appName, namespace, "http"+ registryURL)  
+        deployincluster(registryHost, namespace, appName, commitId, appColor)
 
     } catch(exe)
     {
@@ -68,11 +70,16 @@ def publish(String creds, String commitId, String myAppName, String namespace, S
 
 }
 
-def deployincluster(String registryURL, String namespace, String appName, String commitId, String appColor){
+def deployincluster(String registryHost, String namespace, String appName, String commitId, String appColor){
     
     echo 'deploying using helm'
-    sh "sed -i 's|IM_URI|${registryURL}/${namespace}/${appName}|g' ./helm/values.yaml" 
+    echo "setting image name to ${registryHost}/${namespace}/${appName}" 
+    sh "sed -i 's|IM_URI|${registryHost}/${namespace}/${appName}|g' ./helm/values.yaml" 
+
+    echo "setting image tag to ${commitId}"
     sh "sed -i 's|IM_TAG|${commitId}|g' ./helm/values.yaml"
+
+    echo "setting app color to ${appColor}" 
     sh "sed -i 's|APP_COLOR|${appColor}|g' ./helm/values.yaml"
     // sh "sed -i back 's|APP_PORT|${appPort}|g' ./helm/values.yaml"
     sh "cat ./helm/values.yaml"
