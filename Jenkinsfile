@@ -2,6 +2,8 @@
 creds = "apic-apidev"
 commitId = "001"
 appName = "mySampleApp".toLowerCase()
+registryURL = "http://localhost:80";
+
 namespace = "labs"
     parameters {
         string(defaultValue: "mysampleapp", description: 'name of the app', name: 'appNameParam')
@@ -35,15 +37,7 @@ node {
     }
 }    
 
-def deploy(String creds, String commitId, String myAppName, String namespace) {
-        
-        //Login to Dev Server
-        try {
-            echo "Accept license"
-        } catch(exe){
-            echo "Failed to accept license with Status Code: ${exe}"
-            throw exe                       
-        }  
+def deploy(String creds, String commitId, String myAppName, String namespace, String registryURL) {
         
         stage ('Build') {
                 echo 'Running build automation'
@@ -54,11 +48,11 @@ def deploy(String creds, String commitId, String myAppName, String namespace) {
         stage ('reg-load') {
             echo 'Loading built image into registry'
                 
-                /*script {
-                    docker.withRegistry('http://localhost:80/app/', 'docker-registry') {
-                        docimg.push("v2")
-                    }
-                 }*/
+            script {
+                docker.withRegistry(registryURL, 'docker-registry') {
+                    docimg.push(commitId)
+                }
+            }
                 //sh 'docker build -t helloapp:v1 .'
                 //echo 'push to registry'
                 //sh 'docker tag helloapp:v1 localhost:80/app/helloapp:v1'
@@ -70,6 +64,5 @@ def deploy(String creds, String commitId, String myAppName, String namespace) {
                 //sh 'helm list'
 
         }
+
 }
-
-
