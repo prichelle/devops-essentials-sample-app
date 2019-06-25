@@ -43,7 +43,7 @@ def deploy(String creds, String commitId, String myAppName, String namespace) {
         
         stage ('Build') {
                 echo 'Running build automation'
-                imageName = ${namespace} + "/" + ${myAppName} + ":" + $(commitId)
+                imageName = namespace + "/" + myAppName + ":" + commitId
                 echo "building imageName"
                 docimg = docker.build(imageName)
         } 
