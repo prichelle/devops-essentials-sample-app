@@ -1,5 +1,6 @@
 //Name of credential object in Jenkins
 creds = "apic-apidev"
+commitId = "001"
 
 node {    
 
@@ -12,6 +13,12 @@ node {
  
         sh 'ls -la'
         sh 'git log --abbrev-commit --pretty=oneline -1'
+
+        commitId = sh (
+          			script: 'git log --abbrev-commit --pretty=oneline -1 | awk  \'{print $1}\'',
+          			returnStdout: true
+        		).trim()
+        echo "commit id: ${commitId} " 
         //Publish to integration server
         var1 = "hello"
         deploy(creds, var1)  
@@ -31,7 +38,7 @@ def deploy(String creds, String var1) {
             echo "Failed to Login to ${server} with Status Code: ${exe}"
             throw exe                       
         }  
-
+        
         stage ('Build') {
                 echo 'Running build automation'
                 echo "My branch is: ${env.BRANCH_NAME}"
@@ -43,6 +50,9 @@ def deploy(String creds, String var1) {
                 //echo "commit id: ${COMMITID}"
                 //currentBuild.result = "FAILURE"
         } 
+        stage ('registry load') {
+            echo 'Loading built image into registry'
+        }
 }
 
 
