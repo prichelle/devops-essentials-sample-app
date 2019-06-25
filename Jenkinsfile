@@ -36,8 +36,8 @@ node {
         echo "commit id: ${commitId} " 
         //commitId = "562271c"
 
-        //publish(creds, commitId, appName, namespace, "http"+ registryURL)  
-        //deployincluster(registryHost, namespace, appName, commitId, appColor)
+        publish(creds, commitId, appName, namespace, "http"+ registryURL)  
+        deployincluster(registryHost, namespace, appName, commitId, appColor)
         updateIngress( namespace,  appColor, appName)
 
     } catch(exe)
