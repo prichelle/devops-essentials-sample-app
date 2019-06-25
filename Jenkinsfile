@@ -23,11 +23,8 @@ node {
         echo "Workspace: ${env.WORKSPACE}"
  
         checkout scm
-        //sh 'git checkout'
-
-        sh 'ls -la'
-        //sh 'git log --abbrev-commit --pretty=oneline -1'
-
+        //sh 'ls -la'
+ 
 
         commitId = sh (
           			script: 'git log --abbrev-commit --pretty=oneline -1 | awk  \'{print $1}\'',
