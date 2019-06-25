@@ -1,7 +1,7 @@
 //Name of credential object in Jenkins
 creds = "apic-apidev"
 commitId = "001"
-appName = "helloapp".toLowerCase()
+appName = "mysampleapp".toLowerCase()
 registryURL = "http://localhost:80";
 appColor = "green"
 
@@ -76,8 +76,9 @@ def deployincluster(String registryURL, String namespace, String appName, String
     sh "sed -i 's|APP_COLOR|${appColor}|g' ./helm/values.yaml"
     // sh "sed -i back 's|APP_PORT|${appPort}|g' ./helm/values.yaml"
     sh "cat ./helm/values.yaml"
-    //sh 'helm install --name=${appName}-${commitId} --namespace=${namespace} ./helm'
-    //sh 'helm list'
+    
+    sh 'helm install --name=${appName}-${commitId} --namespace=${namespace} ./helm'
+    sh 'helm list'
     
     
     // kubectl get svc -n labs --show-labels | grep green | awk '{print $1}'
