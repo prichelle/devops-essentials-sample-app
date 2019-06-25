@@ -1,7 +1,7 @@
 //Name of credential object in Jenkins
 creds = "apic-apidev"
 commitId = "001"
-appName = "mySampleApp".lower()
+appName = "mySampleApp".toLowerCase()()
 namespace = "labs"
     parameters {
         string(defaultValue: "mysampleapp", description: 'name of the app', name: 'appNameParam')
