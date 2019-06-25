@@ -22,17 +22,19 @@ node {
         
         echo "Workspace: ${env.WORKSPACE}"
  
+        sh 'git checkout'
+
         sh 'ls -la'
         sh 'git log --abbrev-commit --pretty=oneline -1'
 
-/*
+
         commitId = sh (
           			script: 'git log --abbrev-commit --pretty=oneline -1 | awk  \'{print $1}\'',
           			returnStdout: true
         		).trim()
-*/
-        commitId = "562271c"
+
         echo "commit id: ${commitId} " 
+        commitId = "562271c"
 
         //publish(creds, commitId, appName, namespace, registryURL)  
         deployincluster(registryURL, namespace, appName, commitId, appColor)
