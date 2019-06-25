@@ -105,7 +105,7 @@ def updateIngress(String namespace, String appColor, String appName){
 
         sh "sed -i 's|SVC_NAME|${svcId}|g' ingress.yaml"
 
-        sh "kubectl apply -f ingress.yaml"
+        sh "kubectl apply -f ingress.yaml -n ${namespace}"
 
     }
 }
