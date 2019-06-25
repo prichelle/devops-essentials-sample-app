@@ -28,7 +28,7 @@ node {
         		).trim()
         echo "commit id: ${commitId} " 
         //Publish to integration server
-        deploy(creds, commitId, appName, namespace, registryURL)  
+        publish(creds, commitId, appName, namespace, registryURL)  
 
     } catch(exe)
     {
@@ -37,7 +37,7 @@ node {
     }
 }    
 
-def deploy(String creds, String commitId, String myAppName, String namespace, String registryURL) {
+def publish(String creds, String commitId, String myAppName, String namespace, String registryURL) {
         
         stage ('Build') {
                 echo 'Running build automation'
@@ -53,16 +53,18 @@ def deploy(String creds, String commitId, String myAppName, String namespace, St
                     docimg.push(commitId)
                 }
             }
-                //sh 'docker build -t helloapp:v1 .'
-                //echo 'push to registry'
-                //sh 'docker tag helloapp:v1 localhost:80/app/helloapp:v1'
-                //sh 'docker push localhost:80/app/helloapp:v1'
-                echo 'images available in the catalog'
-                //sh 'curl -X GET http://localhost:80/v2/_catalog -u x:y'
+            echo 'images available in the catalog'
+            withCredentials([usernameColonPassword(credentialsId: 'docker-registry', variable: 'USERPASS')]) {
+                sh 'curl -X GET http://localhost:80/v2/_catalog -u $USERPASS'
+            }
+        }
+
+}
+
+def deployincluster(){
+    
                 //echo 'deploying using helm'
                 //sh 'helm install --name=helloapp --namespace=labs ./helm'
                 //sh 'helm list'
-
-        }
 
 }
