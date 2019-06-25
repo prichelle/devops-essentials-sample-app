@@ -22,7 +22,7 @@ node {
         		).trim()
         echo "commit id: ${commitId} " 
         //Publish to integration server
-        deploy(creds, commitId, myApp, namespace)  
+        deploy(creds, commitId, appName, namespace)  
 
     } catch(exe)
     {
