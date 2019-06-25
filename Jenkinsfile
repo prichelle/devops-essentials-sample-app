@@ -65,7 +65,7 @@ def publish(String creds, String commitId, String myAppName, String namespace, S
             }
             echo 'images available in the catalog'
             withCredentials([usernameColonPassword(credentialsId: 'docker-registry', variable: 'USERPASS')]) {
-                sh 'curl -X GET http://localhost:80/v2/_catalog -u $USERPASS'
+                sh 'curl -X GET $registryURL/v2/_catalog -u $USERPASS'
             }
         }
 
@@ -97,7 +97,7 @@ def updateIngress(String namespace, String appColor, String appName){
 
     stage ('updateIngress'){
        svcId = sh (
-          			script: 'kubectl get svc -n $namespace --show-labels | grep $appColor | grep $appName | awk \'{print $1}\'',
+          			script: 'kubectl get svc -n $namespace --show-labels | grep $appColor | awk \'{print $1}\'',
           			returnStdout: true
         		).trim()
 
