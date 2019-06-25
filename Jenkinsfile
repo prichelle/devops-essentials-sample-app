@@ -9,7 +9,7 @@ node {
         // intServer = env.apichost
         
         echo "Workspace: ${env.WORKSPACE}"
-
+ 
         sh 'ls -la'
         sh 'git log --abbrev-commit --pretty=oneline -1'
         //Publish to integration server
