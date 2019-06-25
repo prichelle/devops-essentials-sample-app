@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: {{ include "sampleApp.fullname" . }}
   labels:
+    release.color: {{ .Values.labels.appcolor}}
 {{ include "sampleApp.labels" . | indent 4 }}
 spec:
   type: {{ .Values.service.type }}

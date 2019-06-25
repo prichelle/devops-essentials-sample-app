@@ -5,9 +5,9 @@
 replicaCount: 1
 
 image:
-  repository: localhost:80/labs/mysampleapp
+  repository: IM_URI
     # localhost:80/app/helloapp
-  tag: 562271c
+  tag: IM_TAG
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -15,11 +15,11 @@ nameOverride: ""
 fullnameOverride: ""
 
 labels:
-  appcolor: green
+  appcolor: APP_COLOR
 
 service:
   type: ClusterIP
-  port: 8080
+  port: APP_PORT
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

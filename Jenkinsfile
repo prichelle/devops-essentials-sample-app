@@ -28,7 +28,7 @@ node {
         		).trim()
         echo "commit id: ${commitId} " 
         //Publish to integration server
-        publish(creds, commitId, appName, namespace, registryURL)  
+        //publish(creds, commitId, appName, namespace, registryURL)  
 
     } catch(exe)
     {
@@ -61,10 +61,13 @@ def publish(String creds, String commitId, String myAppName, String namespace, S
 
 }
 
-def deployincluster(){
+def deployincluster(String namespace, String appName, String commitId){
     
-                //echo 'deploying using helm'
-                //sh 'helm install --name=helloapp --namespace=labs ./helm'
-                //sh 'helm list'
-
+    echo 'deploying using helm'
+    sh 'helm install --name=${appName}-${commitId} --namespace=${namespace} ./helm'
+    sed -i back 's|IM_URI|labs/mysampleapp|g' values.yaml
+    sed -i back 's|IM_TAG|562271c|g' values.yaml
+    sed -i back 's|APP_COLOR|green|g' values.yaml
+    sed -i back 's|APP_PORT|8080|g' values.yaml
+    sh 'helm list'
 }
