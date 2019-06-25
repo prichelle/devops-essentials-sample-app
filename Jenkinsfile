@@ -77,7 +77,7 @@ def deployincluster(String registryURL, String namespace, String appName, String
     // sh "sed -i back 's|APP_PORT|${appPort}|g' ./helm/values.yaml"
     sh "cat ./helm/values.yaml"
     
-    sh 'helm install --name=${appName}-${commitId} --namespace=${namespace} ./helm'
+    sh "helm install --name=${appName}-${commitId} --namespace=${namespace} ./helm"
     sh 'helm list'
     
     
