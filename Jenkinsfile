@@ -68,7 +68,7 @@ def publish(String creds, String commitId, String myAppName, String namespace, S
 
 }
 
-def deployincluster(String namespace, String appName, String commitId){
+def deployincluster(String namespace, String appName, String commitId, String appColor){
     
     echo 'deploying using helm'
     sh "sed -i back 's|IM_URI|${namespace}/${appName}|g' ./helm/values.yaml"
