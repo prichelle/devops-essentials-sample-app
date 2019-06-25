@@ -7,10 +7,11 @@ appColor = "green"
 
 namespace = "labs"
 
-parameters {
-    string(defaultValue: "mysampleapp", description: 'name of the app', name: 'appNameParam')
+
+//parameters {
+    //string(defaultValue: "mysampleapp", description: 'name of the app', name: 'appNameParam')
     //choice(choices: ['master', 'acc'], description: 'What branch ?', name: 'branch')
-}
+//}
  
 node {    
 
@@ -34,7 +35,7 @@ node {
         echo "commit id: ${commitId} " 
 
         //publish(creds, commitId, appName, namespace, registryURL)  
-        deployincluster(namespace, appName, commitId, appColor, appPort)
+        deployincluster(namespace, appName, commitId, appColor)
 
     } catch(exe)
     {
