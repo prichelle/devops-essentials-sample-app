@@ -1,56 +1,61 @@
-pipeline {
-    agent any
-     parameters {
-        string(defaultValue: "TEST", description: 'What environment?', name: 'userFlag')
-        choice(choices: ['master', 'acc'], description: 'What branch ?', name: 'branch')
+//Name of credential object in Jenkins
+creds = "apic-apidev"
+
+node {    
+
+    try{
+        //load server env.
+        //load "$JENKINS_HOME/.envvars/apicenv"
+        // intServer = env.apichost
+        
+        echo "Workspace: ${env.WORKSPACE}"
+
+        sh 'ls -la'
+        sh 'git log --abbrev-commit --pretty=oneline -1'
+        //Publish to integration server
+        var1 = "hello"
+        deploy(creds, var1)  
+
+    } catch(exe)
+    {
+        echo "${exe}"
+        error("[FAILURE] Failed to publish ${product}")
     }
-    stages {
-        stage('Build') {
-            steps {
+}    
+
+def deploy(String creds, String var1) {
+        //Login to Dev Server
+        try {
+            echo "Accept license"
+        } catch(exe){
+            echo "Failed to Login to ${server} with Status Code: ${exe}"
+            throw exe                       
+        }  
+
+        stage ('Build') {
                 echo 'Running build automation'
-                sh 'ls -la'
-                //sh './gradlew build'
-                archiveArtifacts artifacts: 'src/index.html'
                 echo "My branch is: ${env.BRANCH_NAME}"
                 //COMMITID = sh (
           			//script: 'git log --abbrev-commit --pretty=oneline -1',
           			//returnStdout: true
         		//).trim()
                 sh 'git log --abbrev-commit --pretty=oneline -1'
-                echo "commit id: ${COMMITID}"
+                //echo "commit id: ${COMMITID}"
                 //currentBuild.result = "FAILURE"
-            }
-        }/*
-        stage('DeployToStage') {
-            steps {
-                echo 'stage step to be done'
-                echo 'build docker'
-                script {
-                    docimg = docker.build("app/helloapp:v2")
-                    docker.withRegistry('http://localhost:80/app/', 'docker-registry') {
-                        docimg.push("v2")
-                    }
-                 }
-                //sh 'docker build -t helloapp:v1 .'
-                //echo 'push to registry'
-                //sh 'docker tag helloapp:v1 localhost:80/app/helloapp:v1'
-                //sh 'docker push localhost:80/app/helloapp:v1'
-                echo 'images available in the catalog'
-                //sh 'curl -X GET http://localhost:80/v2/_catalog -u x:y'
-                //echo 'deploying using helm'
-                //sh 'helm install --name=helloapp --namespace=labs ./helm'
-                //sh 'helm list'
-            }
-        }
-        stage('DeployToProd') {
-            when {
-                branch 'master'
-            }
-            steps {
-                input 'Does the staging environment look OK?'
-                milestone(1)
-                echo 'prod step to be done'
-            }
-        }*/
-    }
+        } 
+        //Logout for dev server
+        stage ('Logout') {
+            logoutFailed = false
+            try {
+                //apic.logout(server)
+                apic_logout(server)
+                echo "Logged out of ${server}"
+            } catch (exe) {
+                echo "Failed to Log out with Status Code: ${exe}, check Environment manually."
+                logoutFailed = true
+                throw exe
+            } 
+        }   
 }
+
+
