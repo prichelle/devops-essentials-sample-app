@@ -1,7 +1,7 @@
 //Name of credential object in Jenkins
 creds = "apic-apidev"
 commitId = "001"
-appName = "mySampleApp".toLowerCase()
+appName = "helloapp".toLowerCase()
 registryURL = "http://localhost:80";
 appColor = "green"
 
@@ -67,7 +67,7 @@ def publish(String creds, String commitId, String myAppName, String namespace, S
 
 }
 
-def deployincluster(String namespace, String appName, String commitId, String appColor){
+def deployincluster(String namespace, String appName, String commitId){
     
     echo 'deploying using helm'
     sh "sed -i back 's|IM_URI|${namespace}/${appName}|g' ./helm/values.yaml"

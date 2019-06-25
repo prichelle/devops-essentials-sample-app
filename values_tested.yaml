@@ -5,9 +5,9 @@
 replicaCount: 1
 
 image:
-  repository: IM_URI
+  repository: localhost:80/labs/mysampleapp
     # localhost:80/app/helloapp
-  tag: IM_TAG
+  tag: 562271c
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -15,7 +15,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 labels:
-  appcolor: APP_COLOR
+  appcolor: green
 
 service:
   type: ClusterIP
