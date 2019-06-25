@@ -101,7 +101,8 @@ def updateIngress(String namespace, String appColor, String appName){
             updateIngress = input message: 'Update Ingress',
               parameters: [choice(name: 'Update Ingress', choices: 'no\nyes', description: 'Choose "yes" if you want to deploy this build')]
         }
-        when { environment name: 'updateIngress', value: 'yes' 
+        if (updateIngress == "yes") { 
+            
        svcId = sh (
           			script: "kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | grep ${appName} | awk '{print \$1}'",
           			returnStdout: true
