@@ -46,12 +46,18 @@ node {
 
         echo "getting Ingress information"
 
-        exposedSvcId = sh (
-                        script: "kubectl get ingress -n ${namespace} ${appName} -o jsonpath=\"{.spec.rules[*].http.paths[*].backend.serviceName}\"",
+        currentIngressName = sh (
+                        script: "kubectl get ingress -n ${namespace} | grep ${appName} | awk '{print \$1}'",
                         returnStdout: true
                     ).trim()
 
-        if (exposedSvcId) {
+
+
+        if (currentIngressName) {
+            exposedSvcId = sh (
+                            script: "kubectl get ingress -n ${namespace} ${appName} -o jsonpath=\"{.spec.rules[*].http.paths[*].backend.serviceName}\"",
+                            returnStdout: true
+                        ).trim()
             currAppColor = sh (
                             script: "kubectl get svc -n ${namespace} ${exposedSvcId} -o jsonpath=\"{.metadata.labels.color}\"",
                             returnStdout: true
