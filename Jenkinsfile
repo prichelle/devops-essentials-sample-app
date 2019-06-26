@@ -78,7 +78,9 @@ node {
 
 
         //deployincluster(registryHost, namespace, appName, commitId, appColor)
-        updateIngress( namespace,  appColor, appName)
+        //updateIngress( namespace,  appColor, appName)
+
+        removeOldDeployment(namespace, currAppColor)
 
     } catch(exe)
     {
@@ -154,22 +156,26 @@ def updateIngress(String namespace, String appColor, String appName){
                             returnStdout: true
                         ).trim()
 
-            echo "service to be exposed svc: ${svcId} that is tainted with color: ${appColor}"
+            if (svcId){
+                echo "service to be exposed svc: ${svcId} that is tainted with color: ${appColor}"
 
-            sh "sed -i 's|APP_NAME|${appName}|g' ingress.yaml"
+                sh "sed -i 's|APP_NAME|${appName}|g' ingress.yaml"
 
-            sh "cat ingress.yaml"
+                sh "cat ingress.yaml"
 
-            sh "sed -i 's|SVC_NAME|${svcId}|g' ingress.yaml"
-            sh "kubectl apply -f ingress.yaml -n ${namespace}"
+                sh "sed -i 's|SVC_NAME|${svcId}|g' ingress.yaml"
+                sh "kubectl apply -f ingress.yaml -n ${namespace}"
 
-            echo "ingress ${appName} updated"
-            //TODO remove previous deployment
+                echo "ingress ${appName} updated"
+                //TODO remove previous deployment
+            }else{
+                error("[FAILURE] no service available with color ${appColor}")
+            }
         }
     }
 }
 
-def removeOldDeployment(String namespace){
+def removeOldDeployment(String namespace, String oldColor){
     stage ('remove'){
 
         script {
@@ -178,18 +184,32 @@ def removeOldDeployment(String namespace){
         }
         if (deleteDeploy == "yes") { 
 
-            colorSelector = "green"
-
-            if (appName == "green"){
-                colorSelector = "blue"
-            }
-            svcId = sh (
-                            script: "kubectl get svc -n ${namespace} -l release.color=${colorSelector} | grep ${appName} | awk '{print \$1}'",
+            svcIdtoDelete = sh (
+                            script: "kubectl get svc -n ${namespace} -l color=${oldColor},name=${appName} | awk 'FNR==2{print \$1}'",
                             returnStdout: true
                         ).trim()
 
-            echo "svc: ${svcId}"
-            //TODO remove previous deployment
+            if (svcIdtoDelete){
+
+                //checking that the service is not exposed
+                exposedSvcId = sh (
+                                    script: "kubectl get ingress -n ${namespace} ${appName} -o jsonpath=\"{.spec.rules[*].http.paths[*].backend.serviceName}\"",
+                                    returnStdout: true
+                                ).trim()
+
+                if (svcIdtoDelete != exposedSvcId) {
+                    //deleting old deployment
+                    sh "helm delete -n ${namespace} ${exposedSvcId}"
+
+                    echo "old service deleted"
+
+                }else{
+                    error("[FAILURE] service to delete is exposed")
+                }
+            }else{
+                echo "no service to delete with color ${oldColor}"
+            }
+
         }
     }
 
