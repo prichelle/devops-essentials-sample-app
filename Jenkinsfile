@@ -142,12 +142,13 @@ def updateIngress(String namespace, String appColor, String appName){
 
         script {
             updateIngress = input message: 'Update Ingress',
-              parameters: [choice(name: 'Update Ingress', choices: 'no\nyes', description: 'Choose "yes" if you want to expose service tainted in $appColor')]
+              parameters: [choice(name: 'Update Ingress', choices: 'no\nyes', description: "Choose yes if you want to expose service tainted in ${appColor}")]
         }
         if (updateIngress == "yes") { 
             echo "initializing ingress yaml file"   
 
             //getting the svc deployed with the target color
+            // we need to ensure that the service with the required tainted color is deployed
             svcId = sh (
                             script: "kubectl get svc -n ${namespace} -l color=${appColor},name=${appName} | awk '{print \$1}'",
                             returnStdout: true
@@ -156,6 +157,9 @@ def updateIngress(String namespace, String appColor, String appName){
             echo "service to be exposed svc: ${svcId} that is tainted with color: ${appColor}"
 
             sh "sed -i 's|APP_NAME|${appName}|g' ingress.yaml"
+
+            sh "cat ingress.yaml"
+
             sh "sed -i 's|SVC_NAME|${svcId}|g' ingress.yaml"
             sh "kubectl apply -f ingress.yaml -n ${namespace}"
 
