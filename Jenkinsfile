@@ -149,7 +149,7 @@ def updateIngress(String namespace, String appColor, String appName){
 
             //getting the svc deployed with the target color
             svcId = sh (
-                            script: "kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | grep ${appName} | awk '{print \$1}'",
+                            script: "kubectl get svc -n ${namespace} -l color=${appColor},name=${appName} | awk '{print \$1}'",
                             returnStdout: true
                         ).trim()
 
