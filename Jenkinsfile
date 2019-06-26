@@ -142,7 +142,7 @@ def updateIngress(String namespace, String appColor, String appName){
 
         script {
             updateIngress = input message: 'Update Ingress',
-              parameters: [choice(name: 'Update Ingress', choices: 'no\nyes', description: 'Choose "yes" if you want to deploy this build')]
+              parameters: [choice(name: 'Update Ingress', choices: 'no\nyes', description: 'Choose "yes" if you want to expose serice tainted in ${appColor}')]
         }
         if (updateIngress == "yes") { 
             echo "initializing ingress yaml file"   
