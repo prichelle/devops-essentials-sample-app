@@ -150,7 +150,7 @@ def updateIngress(String namespace, String appColor, String appName){
             //getting the svc deployed with the target color
             // we need to ensure that the service with the required tainted color is deployed
             svcId = sh (
-                            script: "kubectl get svc -n ${namespace} -l color=${appColor},name=${appName} | awk '{print \$1}'",
+                            script: "kubectl get svc -n ${namespace} -l color=${appColor},name=${appName} | awk 'FNR==2{print \$1}'",
                             returnStdout: true
                         ).trim()
 
