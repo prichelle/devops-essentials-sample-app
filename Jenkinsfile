@@ -38,8 +38,8 @@ node {
 
         echo "commit id: ${commitId} " 
         echo "set commit id to 562271c for test"
-        //commitId = "562271c"
-        commitId = "67f02b1"
+        commitId = "562271c" //v2
+        //commitId = "67f02b1" //vnext
         
         appName = sh (
                             script: "cat ./helm/Chart.yaml | grep name | awk '{print \$2}'",
@@ -82,7 +82,10 @@ node {
         deployincluster(registryHost, namespace, appName, commitId, appColor)
         updateIngress( namespace,  appColor, appName)
 
-        removeOldDeployment(namespace, currAppColor)
+        removeOldDeployment(namespace, currAppColor, appName)
+    
+        rollbackToPrevious(namespace, currAppColor, appName)
+
 
     } catch(exe)
     {
@@ -177,7 +180,51 @@ def updateIngress(String namespace, String appColor, String appName){
     }
 }
 
-def removeOldDeployment(String namespace, String oldColor){
+def rollbackToPrevious(String namespace, String oldColor, String appName){
+   stage ('rollback'){
+
+        script {
+            rollbackDeploy = input message: 'rollback deployment',
+              parameters: [choice(name: 'rollback deployment', choices: 'no\nyes', description: "Choose yes if you want to rollback to deployment tainted with color ${oldColor}")]
+        }
+        if (rollbackDeploy == "yes") { 
+
+            svcIdtoRollback = sh (
+                            script: "kubectl get svc -n ${namespace} -l color=${oldColor},name=${appName} | awk 'FNR==2{print \$1}'",
+                            returnStdout: true
+                        ).trim()
+
+            if (svcIdtoRollback){
+
+                //checking that the service is not exposed
+                exposedSvcId = sh (
+                                    script: "kubectl get ingress -n ${namespace} ${appName} -o jsonpath=\"{.spec.rules[*].http.paths[*].backend.serviceName}\"",
+                                    returnStdout: true
+                                ).trim()
+
+                if (svcIdtoRollback != exposedSvcId) {
+                    //rollbacl old deployment
+                    sh "sed -i 's|APP_NAME|${appName}|g' ingress.yaml"
+                    sh "sed -i 's|SVC_NAME|${svcIdtoRollback}|g' ingress.yaml"
+                    sh "sed -i 's|${exposedSvcId}|${svcIdtoRollback}|g' ingress.yaml"
+                   
+                    sh "kubectl apply -f ingress.yaml -n ${namespace}"
+
+                    echo "ingress ${appName} updated"
+    
+                }else{
+                    echo("service is already exposed")
+                }
+            }else{
+                error("[FAILURE] no service available with color ${oldColor}")
+            }
+
+        }
+    }
+
+}
+
+def removeOldDeployment(String namespace, String oldColor, String appName){
     stage ('remove'){
 
         script {
