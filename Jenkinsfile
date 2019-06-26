@@ -78,7 +78,7 @@ node {
 
 
         //deployincluster(registryHost, namespace, appName, commitId, appColor)
-        //updateIngress( namespace,  appColor, appName)
+        updateIngress( namespace,  appColor, appName)
 
         removeOldDeployment(namespace, currAppColor)
 
