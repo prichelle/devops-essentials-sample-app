@@ -8,14 +8,13 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      name: {{ include "sampleApp.name" . }}
-      instance: {{ .Release.Name }}
+      instance-release: {{ .Release.Name }}
       color: {{ .Values.labels.appcolor}}
   template:
     metadata:
       labels:
         name: {{ include "sampleApp.name" . }}
-        instance: {{ .Release.Name }}
+        instance-release: {{ .Release.Name }}
         color: {{ .Values.labels.appcolor}}
     spec:
     {{- with .Values.imagePullSecrets }}
