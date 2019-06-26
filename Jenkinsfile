@@ -6,8 +6,8 @@ registryHost = "localhost:80";
 
 registryURL = "http://" + registryHost
 
-appColor = "blue"
-currAppColor = "green"
+appColor = "green"
+currAppColor = "blue"
 namespace = "labs"
 
 
