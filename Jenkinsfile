@@ -179,8 +179,8 @@ def removeOldDeployment(String namespace, String oldColor){
     stage ('remove'){
 
         script {
-            deleteDeploy = input message: 'delete old deployment',
-              parameters: [choice(name: 'delete previous deployment', choices: 'no\nyes', description: 'Choose "yes" if you want to remove deployment')]
+            deleteDeploy = input message: 'Delete old deployment',
+              parameters: [choice(name: 'Delete previous deployment', choices: 'no\nyes', description: "Choose yes if you want to remove deployment tainted with color ${oldColor}")]
         }
         if (deleteDeploy == "yes") { 
 
