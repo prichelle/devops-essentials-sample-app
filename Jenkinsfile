@@ -34,11 +34,19 @@ node {
         		).trim()
 
         echo "commit id: ${commitId} " 
-        //commitId = "562271c"
+        echo "set commit id to 562271c for test"
+        commitId = "562271c"
+        appName = sh (
+                            script: "cat ./helm/Chart.yaml | grep name | awk '{print \$2}'",
+                            returnStdout: true
+                        ).trim()
+        echo "deploying app: ${appName}" 
 
-        publish(creds, commitId, appName, namespace, registryURL)  
+        //publish(creds, commitId, appName, namespace, registryURL)  
+
+
         deployincluster(registryHost, namespace, appName, commitId, appColor)
-        updateIngress( namespace,  appColor, appName)
+        //updateIngress( namespace,  appColor, appName)
 
     } catch(exe)
     {
@@ -74,6 +82,9 @@ def publish(String creds, String commitId, String myAppName, String namespace, S
 def deployincluster(String registryHost, String namespace, String appName, String commitId, String appColor){
     
     stage ('deploy-img'){
+
+        //echo "getting the current service name"
+        //kubectl get ingress -n labs helloapp -o jsonpath="{.spec.rules[*].http.paths[*].backend.serviceName}"
         echo 'deploying using helm'
         echo "setting image name to ${registryHost}/${namespace}/${appName}" 
         sh "sed -i 's|IM_URI|${registryHost}/${namespace}/${appName}|g' ./helm/values.yaml" 
@@ -103,16 +114,43 @@ def updateIngress(String namespace, String appColor, String appName){
         }
         if (updateIngress == "yes") { 
 
-       svcId = sh (
-          			script: "kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | grep ${appName} | awk '{print \$1}'",
-          			returnStdout: true
-        		).trim()
+            svcId = sh (
+                            script: "kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | grep ${appName} | awk '{print \$1}'",
+                            returnStdout: true
+                        ).trim()
 
-        echo "svc: ${svcId}"
+            echo "svc: ${svcId}"
 
-        sh "sed -i 's|SVC_NAME|${svcId}|g' ingress.yaml"
+            sh "sed -i 's|SVC_NAME|${svcId}|g' ingress.yaml"
+            sh "kubectl apply -f ingress.yaml -n ${namespace}"
 
-        sh "kubectl apply -f ingress.yaml -n ${namespace}"
-}
+            //TODO remove previous deployment
+        }
     }
+}
+
+def removeOldDeployment(String namespace){
+    stage ('remove'){
+
+        script {
+            deleteDeploy = input message: 'delete old deployment',
+              parameters: [choice(name: 'delete previous deployment', choices: 'no\nyes', description: 'Choose "yes" if you want to remove deployment')]
+        }
+        if (deleteDeploy == "yes") { 
+
+            colorSelector = "green"
+
+            if (appName == "green"){
+                colorSelector = "blue"
+            }
+            svcId = sh (
+                            script: "kubectl get svc -n ${namespace} -l release.color=${colorSelector} | grep ${appName} | awk '{print \$1}'",
+                            returnStdout: true
+                        ).trim()
+
+            echo "svc: ${svcId}"
+            //TODO remove previous deployment
+        }
+    }
+
 }

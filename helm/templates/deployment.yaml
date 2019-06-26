@@ -8,15 +8,15 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "sampleApp.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
-      release.color: {{ .Values.labels.appcolor}}
+      name: {{ include "sampleApp.name" . }}
+      instance: {{ .Release.Name }}
+      color: {{ .Values.labels.appcolor}}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "sampleApp.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        release.color: {{ .Values.labels.appcolor}}
+        name: {{ include "sampleApp.name" . }}
+        instance: {{ .Release.Name }}
+        color: {{ .Values.labels.appcolor}}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

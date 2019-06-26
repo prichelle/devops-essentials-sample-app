@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}
   labels:
-    release.color: {{ .Values.labels.appcolor}}
+    color: {{ .Values.labels.appcolor}}
 {{ include "sampleApp.labels" . | indent 4 }}
 spec:
   type: {{ .Values.service.type }}
@@ -13,5 +13,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "sampleApp.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    name: {{ include "sampleApp.name" . }}
+    instance: {{ .Release.Name }}
