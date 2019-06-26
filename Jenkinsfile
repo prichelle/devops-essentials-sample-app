@@ -37,7 +37,7 @@ node {
         echo "commit id: ${commitId} " 
         echo "set commit id to 562271c for test"
         //commitId = "562271c"
-        commitId = "1636f55"
+        commitId = "67f02b1"
         
         appName = sh (
                             script: "cat ./helm/Chart.yaml | grep name | awk '{print \$2}'",
@@ -77,7 +77,7 @@ node {
         //publish(creds, commitId, appName, namespace, registryURL)  
 
 
-        //deployincluster(registryHost, namespace, appName, commitId, appColor)
+        deployincluster(registryHost, namespace, appName, commitId, appColor)
         updateIngress( namespace,  appColor, appName)
 
         removeOldDeployment(namespace, currAppColor)
@@ -199,7 +199,7 @@ def removeOldDeployment(String namespace, String oldColor){
 
                 if (svcIdtoDelete != exposedSvcId) {
                     //deleting old deployment
-                    sh "helm delete --purge ${exposedSvcId}"
+                    sh "helm delete --purge ${svcIdtoDelete}"
 
                     echo "old service deleted"
 
