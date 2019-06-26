@@ -77,8 +77,8 @@ node {
         //publish(creds, commitId, appName, namespace, registryURL)  
 
 
-        deployincluster(registryHost, namespace, appName, commitId, appColor)
-        updateIngress( namespace,  appColor, appName, currentIngressName)
+        //deployincluster(registryHost, namespace, appName, commitId, appColor)
+        updateIngress( namespace,  appColor, appName)
 
     } catch(exe)
     {
