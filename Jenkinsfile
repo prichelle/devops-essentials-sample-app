@@ -199,7 +199,7 @@ def removeOldDeployment(String namespace, String oldColor){
 
                 if (svcIdtoDelete != exposedSvcId) {
                     //deleting old deployment
-                    sh "helm delete --namespace ${namespace} --purge ${exposedSvcId}"
+                    sh "helm delete --purge ${exposedSvcId}"
 
                     echo "old service deleted"
 
