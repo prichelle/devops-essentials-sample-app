@@ -7,6 +7,7 @@ registryHost = "localhost:80";
 registryURL = "http://" + registryHost
 
 appColor = "blue"
+currAppColor = "green"
 namespace = "labs"
 
 
@@ -40,12 +41,36 @@ node {
                             script: "cat ./helm/Chart.yaml | grep name | awk '{print \$2}'",
                             returnStdout: true
                         ).trim()
+
         echo "deploying app: ${appName}" 
+
+        echo "getting Ingress information"
+
+        exposedSvcId = sh (
+                        script: "kubectl get ingress -n ${namespace} ${appName} -o jsonpath=\"{.spec.rules[*].http.paths[*].backend.serviceName}\"",
+                        returnStdout: true
+                    ).trim()
+
+        if (exposedSvcId) {
+            currAppColor = sh (
+                            script: "kubectl get svc -n ${namespace} ${exposedSvcId} -o jsonpath=\"{.metadata.labels.color}\"",
+                            returnStdout: true
+                        ).trim()
+            echo "current service ${exposedSvcId} tainted with color ${currAppColor}"
+
+            if (currAppColor == "green"){
+                appColor = "blue"
+            }
+        } 
+
+        echo "tainting current deployment to color ${appColor}"
+
+       //kubectl get ingress -n labs | grep mysampleapp | awk '{print $1}'
 
         //publish(creds, commitId, appName, namespace, registryURL)  
 
 
-        deployincluster(registryHost, namespace, appName, commitId, appColor)
+        // deployincluster(registryHost, namespace, appName, commitId, appColor)
         //updateIngress( namespace,  appColor, appName)
 
     } catch(exe)
@@ -113,7 +138,8 @@ def updateIngress(String namespace, String appColor, String appName){
               parameters: [choice(name: 'Update Ingress', choices: 'no\nyes', description: 'Choose "yes" if you want to deploy this build')]
         }
         if (updateIngress == "yes") { 
-
+            echo "initializing ingress yaml file"   
+            sh "sed -i 's|SVC_NAME|${appName}|g' ingress.yaml"
             svcId = sh (
                             script: "kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | grep ${appName} | awk '{print \$1}'",
                             returnStdout: true
