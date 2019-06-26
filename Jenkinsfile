@@ -28,6 +28,8 @@ node {
         checkout scm
         //sh 'ls -la'
  
+        echo "full commit id"
+        sh 'git log --pretty=oneline -1'
 
         commitId = sh (
           			script: 'git log --abbrev-commit --pretty=oneline -1 | awk  \'{print $1}\'',
