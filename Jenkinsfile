@@ -36,7 +36,9 @@ node {
 
         echo "commit id: ${commitId} " 
         echo "set commit id to 562271c for test"
-        commitId = "562271c"
+        //commitId = "562271c"
+        commitId = "1636f55"
+        
         appName = sh (
                             script: "cat ./helm/Chart.yaml | grep name | awk '{print \$2}'",
                             returnStdout: true
@@ -52,7 +54,7 @@ node {
                     ).trim()
 
 
-
+        // searching the current color of the exposed service
         if (currentIngressName) {
             exposedSvcId = sh (
                             script: "kubectl get ingress -n ${namespace} ${appName} -o jsonpath=\"{.spec.rules[*].http.paths[*].backend.serviceName}\"",
@@ -64,6 +66,7 @@ node {
                         ).trim()
             echo "current service ${exposedSvcId} tainted with color ${currAppColor}"
 
+            //default color for target service is green. So if exposed service is green the target color need to be set to blue
             if (currAppColor == "green"){
                 appColor = "blue"
             }
@@ -71,13 +74,11 @@ node {
 
         echo "tainting current deployment to color ${appColor}"
 
-       //kubectl get ingress -n labs | grep mysampleapp | awk '{print $1}'
-
         //publish(creds, commitId, appName, namespace, registryURL)  
 
 
-        // deployincluster(registryHost, namespace, appName, commitId, appColor)
-        //updateIngress( namespace,  appColor, appName)
+        deployincluster(registryHost, namespace, appName, commitId, appColor)
+        updateIngress( namespace,  appColor, appName, currentIngressName)
 
     } catch(exe)
     {
@@ -145,17 +146,20 @@ def updateIngress(String namespace, String appColor, String appName){
         }
         if (updateIngress == "yes") { 
             echo "initializing ingress yaml file"   
-            sh "sed -i 's|SVC_NAME|${appName}|g' ingress.yaml"
+
+            //getting the svc deployed with the target color
             svcId = sh (
                             script: "kubectl get svc -n ${namespace} --show-labels | grep ${appColor} | grep ${appName} | awk '{print \$1}'",
                             returnStdout: true
                         ).trim()
 
-            echo "svc: ${svcId}"
+            echo "service to be exposed svc: ${svcId} that is tainted with color: ${appColor}"
 
+            sh "sed -i 's|APP_NAME|${appName}|g' ingress.yaml"
             sh "sed -i 's|SVC_NAME|${svcId}|g' ingress.yaml"
             sh "kubectl apply -f ingress.yaml -n ${namespace}"
 
+            echo "ingress ${appName} updated"
             //TODO remove previous deployment
         }
     }

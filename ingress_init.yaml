@@ -3,13 +3,13 @@ kind: Ingress
 metadata:
   generation: 1
   labels:
-    app: APP_NAME
-  name: APP_NAME
+    app: mysampleapp
+  name: mysampleapp
 spec:
   rules:
   - http:
       paths:
       - backend:
-          serviceName: SVC_NAME
+          serviceName: mysampleapp-562271c
           servicePort: 8080
         path: /
