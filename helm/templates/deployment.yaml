@@ -8,6 +8,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
+      name: {{ include "sampleApp.name" . }}
       instance-release: {{ .Release.Name }}
       color: {{ .Values.labels.appcolor}}
   template:
