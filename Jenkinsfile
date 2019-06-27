@@ -38,7 +38,7 @@ node {
 
         echo "commit id: ${commitId} " 
         echo "set commit id to 562271c for test"
-        commitId = "562271c" //v2
+        //commitId = "562271c" //v2
         //commitId = "67f02b1" //vnext
         
         appName = sh (
@@ -76,7 +76,7 @@ node {
 
         echo "tainting current deployment to color ${appColor}"
 
-        //publish(creds, commitId, appName, namespace, registryURL)  
+        publish(creds, commitId, appName, namespace, registryURL)  
 
 
         deployincluster(registryHost, namespace, appName, commitId, appColor)
